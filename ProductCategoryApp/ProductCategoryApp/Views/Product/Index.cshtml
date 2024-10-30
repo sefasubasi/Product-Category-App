@@ -1,0 +1,12 @@
+﻿@model List<Category>
+
+<h1 class="text-center mb-4">Product Categories</h1>
+
+<div class="list-group">
+    @foreach (var category in Model)
+    {
+        <a href="@Url.Action("Category", "Product", new { slug = category.Slug })" class="list-group-item list-group-item-action">
+            @category.Name
+        </a>
+    }
+</div>

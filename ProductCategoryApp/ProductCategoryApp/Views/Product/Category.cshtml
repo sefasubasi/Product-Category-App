@@ -1,0 +1,96 @@
+﻿@model List<Product>
+
+<h1 class="text-center mb-4">Products in @ViewBag.CategoryName</h1>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="@product.Thumbnail" class="card-img-top" alt="@product.Title" />
+                <div class="card-body">
+                    <h5 class="card-title">@product.Title</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text"><strong>Price:</strong> $@product.Price</p>
+                    <p class="card-text"><strong>Rating:</strong> @product.Rating/5</p>
+                    <!-- "View Details" button to open modal with product details -->
+                    <button type="button" class="btn btn-primary"
+                            onclick="fetchProductDetails('@ViewBag.CategoryName', @product.Id)"
+                            data-toggle="modal" data-target="#productModal">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Modal for Product Details -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img id="productImage" class="img-fluid mb-3" alt="Product Image" />
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Price:</strong> <span id="productPrice"></span></p>
+                        <p><strong>Discount:</strong> <span id="productDiscount"></span>%</p>
+                        <p><strong>Rating:</strong> <span id="productRating"></span>/5</p>
+                        <p><strong>Stock:</strong> <span id="productStock"></span></p>
+                        <p><strong>Brand:</strong> <span id="productBrand"></span></p>
+                        <p><strong>Category:</strong> <span id="productCategory"></span></p>
+                        <p><strong>Warranty Information:</strong> <span id="productWarranty"></span></p>
+                        <p><strong>Shipping Information:</strong> <span id="productShipping"></span></p>
+                        <p><strong>Availability:</strong> <span id="productAvailability"></span></p>
+                        <p><strong>Minimum Order Quantity:</strong> <span id="productMinOrder"></span></p>
+                        <p><strong>Description:</strong> <span id="productDescription"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Details with AJAX -->
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function fetchProductDetails(category, productId) {
+            $.ajax({
+                url: '/Product/GetProductDetails',
+                type: 'GET',
+                data: { category: category, id: productId },
+                success: function (product) {
+                    $('#productTitle').text(product.title);
+                    $('#productImage').attr('src', product.thumbnail || product.images[0]);
+                    $('#productPrice').text('$' + product.price);
+                    $('#productDiscount').text(product.discountPercentage);
+                    $('#productRating').text(product.rating);
+                    $('#productStock').text(product.stock);
+                    $('#productBrand').text(product.brand);
+                    $('#productCategory').text(product.category);
+                    $('#productWarranty').text(product.warrantyInformation);
+                    $('#productShipping').text(product.shippingInformation);
+                    $('#productAvailability').text(product.availabilityStatus);
+                    $('#productMinOrder').text(product.minimumOrderQuantity);
+                    $('#productDescription').text(product.description);
+                },
+                error: function () {
+                    alert("Unable to retrieve product details.");
+                }
+            });
+        }
+    </script>
+}
